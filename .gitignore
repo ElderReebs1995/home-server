@@ -1,1 +1,10 @@
 .env
+
+# -------------------------------------------------------------------
+# Terraform Guardrails (Applies to all subdirectories)
+# -------------------------------------------------------------------
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.backup
+**/*.tfvars
+**/.terraform.lock.hcl
