@@ -9,24 +9,14 @@ resource "docker_container" "pihole" {
   image   = docker_image.pihole.image_id
   restart = "unless-stopped"
 
-  # Core DNS Routing Ports
-  ports {
-    internal = 53
-    external = 53
-    protocol = "udp"
-  }
-  ports {
-    internal = 53
-    external = 53
-    protocol = "tcp"
-  }
+  # -------------------------------------------------------------------
+  # Host Networking: Attaches the container directly to the Pi's hardware.
+  # This makes individual client device IPs visible in your dashboards.
+  # -------------------------------------------------------------------
+  network_mode = "host"
 
-  # Web Admin Console Panel Port
-  ports {
-    internal = 80
-    external = 80
-    protocol = "tcp"
-  }
+  # NOTE: The explicit "ports" blocks have been completely removed.
+  # Host mode automatically exposes ports 53, 80, and 443 directly.
 
   # Injecting decoupled operational configurations
   env = [
@@ -38,6 +28,19 @@ resource "docker_container" "pihole" {
   # the exact second the container build finishes successfully.
   provisioner "local-exec" {
     command = "python ./scripts/sync_blocklists.py"
+  }
+
+  # -------------------------------------------------------------------
+  # Senior Safeguard: Adjusted to allow network adjustments
+  # -------------------------------------------------------------------
+  lifecycle {
+    ignore_changes = [
+      env,
+      # "network_mode" MUST BE REMOVED FROM THIS LIST so Terraform can apply it!
+      healthcheck,
+      command,
+      entrypoint
+    ]
   }
 }
 
@@ -62,5 +65,19 @@ resource "docker_container" "uptime_kuma" {
   volumes {
     volume_name    = docker_volume.kuma_data.name
     container_path = "/app/data"
+  }
+
+  # -------------------------------------------------------------------
+  # Senior Safeguard: Ignore structural drift to prevent service drop
+  # -------------------------------------------------------------------
+  lifecycle {
+    ignore_changes = [
+      env,
+      network_mode,
+      healthcheck,
+      command,
+      entrypoint,
+      image
+    ]
   }
 }
