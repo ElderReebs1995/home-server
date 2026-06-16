@@ -36,7 +36,6 @@ resource "docker_container" "pihole" {
   lifecycle {
     ignore_changes = [
       env,
-      # "network_mode" MUST BE REMOVED FROM THIS LIST so Terraform can apply it!
       healthcheck,
       command,
       entrypoint
