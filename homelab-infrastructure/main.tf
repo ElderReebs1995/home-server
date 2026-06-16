@@ -11,7 +11,7 @@ resource "docker_container" "pihole" {
 
   # -------------------------------------------------------------------
   # Host Networking: Attaches the container directly to the Pi's hardware.
-  # This makes individual client device IPs visible in your dashboards.
+  # This makes individual client device IPs visible in the dashboard.
   # -------------------------------------------------------------------
   network_mode = "host"
 
