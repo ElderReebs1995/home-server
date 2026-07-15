@@ -27,7 +27,7 @@ resource "docker_container" "pihole" {
   # This hook will fire off the Python automation 
   # the exact second the container build finishes successfully.
   provisioner "local-exec" {
-    command = "python ./scripts/sync_blocklists.py"
+    command = "python ./scripts/network_check.py"
   }
 
   # -------------------------------------------------------------------
